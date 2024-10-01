@@ -1,4 +1,5 @@
 pipeline {
+<<<<<<< HEAD
     agent any // Use any available Jenkins agent
     stages {
         stage('e2e-tests') {
