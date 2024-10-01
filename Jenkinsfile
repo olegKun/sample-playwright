@@ -5,7 +5,7 @@ pipeline {
             steps {
                 script {
                     // Get the workspace directory dynamically
-                    def workspaceDir = pwd()
+                     def workspaceDir = pwd().replaceAll('C:', '/c').replaceAll('\\\\', '/')
 
                     // Run the Docker container with the specified image
                     docker.image('mcr.microsoft.com/playwright:v1.47.2-noble').inside("-w ${workspaceDir} -v ${workspaceDir}:${workspaceDir}") {
