@@ -2,7 +2,7 @@ pipeline {
    agent {
       docker {
          image 'mcr.microsoft.com/playwright:v1.47.2-noble'
-         args '--network host'
+         args '--network my_network'
       }
    }
    stages {
