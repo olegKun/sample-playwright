@@ -1,10 +1,10 @@
 pipeline {
-   agent {
-      docker {
-         image 'mcr.microsoft.com/playwright:v1.47.2-noble'
-         args '--network my_network'
-      }
-   }
+//    agent {
+//       docker {
+//          image 'mcr.microsoft.com/playwright:v1.47.2-noble'
+//          args '--network my_network'
+//       }
+//    }
 
    stages {
       stage('e2e-tests') {
