@@ -1,0 +1,39 @@
+---
+- name: Teardown Jenkins Installation
+  hosts: jenkins_server
+  become: true
+
+  tasks:
+    - name: Stop Jenkins service
+      systemd:
+        name: jenkins
+        state: stopped
+        enabled: no
+
+    - name: Uninstall Jenkins package
+      yum:
+        name: jenkins
+        state: absent
+
+#    - name: Remove Jenkins repository file
+#      file:
+#        path: /etc/yum.repos.d/jenkins.repo
+#        state: absent
+
+#    - name: Remove Jenkins GPG key
+#      file:
+#        path: /etc/pki/rpm-gpg/jenkins.io-2023.key
+#        state: absent
+
+#    - name: Remove Jenkins data directory
+#      file:
+#        path: /var/lib/jenkins
+#        state: absent
+
+#    - name: Remove Java 17 (Amazon Corretto)
+#      yum:
+#        name: java-17-amazon-corretto
+#        state: absent
+
+    - name: Clean up cache and temporary files
+      command: dnf clean all
