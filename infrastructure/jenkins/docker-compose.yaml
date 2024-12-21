@@ -1,6 +1,6 @@
 services:
   jenkins:
-    image: myjenkins-blueocean:2.462.2-1  # The custom Jenkins image
+    image: custom-jenkins:latest  # The custom Jenkins image
     user: root
     container_name: jenkins-blueocean      # Name of the container
     ports:
