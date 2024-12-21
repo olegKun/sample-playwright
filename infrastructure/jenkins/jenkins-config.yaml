@@ -20,7 +20,7 @@ jenkins:
       dockerApi:
         connectTimeout: 60
         dockerHost:
-          uri: "tcp://host.docker.internal:2375"
+          uri: "tcp://host.docker.internal:2376"
         readTimeout: 60
       exposeDockerHost: true
       name: "ttyty"
