@@ -6,12 +6,14 @@ services:
     ports:
       - "8080:8080"                         # Map port 8080 for the Jenkins UI
       - "50000:50000"                       # Map port 50000 for agent communication
+      - "2376:2376"
     volumes:
       - jenkins-data:/var/jenkins_home     # Define the volume for Jenkins data
       - /var/run/docker.sock:/var/run/docker.sock  # Mount the Docker socket for communication with the Docker daemon
     networks:
       - jenkins                             # Network to connect Jenkins with other services, if any
     environment:
+      DOCKER_HOST: sfsdfsd
       JAVA_OPTS: -Dhudson.model.DirectoryBrowserSupport.CSP="sandbox allow-scripts; default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval';"
 
 #    jenkins-agent:
