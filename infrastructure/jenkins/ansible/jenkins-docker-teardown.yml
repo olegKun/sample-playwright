@@ -1,0 +1,30 @@
+---
+- name: Teardown Jenkins Installation
+  hosts: jenkins_server
+  become: true
+
+  tasks:
+    - name: Stop all Jenkins containers
+      shell: docker stop $(docker ps -q --filter "ancestor=custom-jenkins:latest")
+      ignore_errors: yes
+
+    - name: Remove all Jenkins containers
+      shell: docker rm $(docker ps -aq --filter "ancestor=custom-jenkins:latest")
+      ignore_errors: yes
+
+    - name: Remove Jenkins volumes
+      command: docker volume rm jenkins_jenkins-data jenkins_jenkins_agent_home
+      register: volume_removal
+      ignore_errors: yes  # Continues even if volumes are missing
+
+    - name: Debug volume removal output
+      debug:
+        msg: "{{ volume_removal.stdout }}"
+
+    - name: Remove all Docker volumes
+      shell: docker volume prune -f
+      ignore_errors: yes
+
+    - name: Remove Jenkins Docker image
+      shell: docker rmi -f $(docker images -q --filter "reference=custom-jenkins:latest")
+      ignore_errors: yes

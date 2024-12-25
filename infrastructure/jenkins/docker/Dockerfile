@@ -10,11 +10,11 @@ RUN echo "deb [arch=$(dpkg --print-architecture) \
 RUN apt-get update && apt-get install -y docker-ce-cli
 USER jenkins
 #RUN jenkins-plugin-cli --plugins "blueocean docker-workflow"
-COPY plugins.txt /usr/share/jenkins/plugins.txt
+COPY ../plugins.txt /usr/share/jenkins/plugins.txt
 
 
-COPY config.xml /usr/share/jenkins/ref/jobs/my-job/config.xml
-COPY jenkins-config.yaml /usr/share/jenkins/ref/jenkins-config.yaml
+COPY ../config.xml /usr/share/jenkins/ref/jobs/my-job/config.xml
+COPY ../jenkins-config.yaml /usr/share/jenkins/ref/jenkins-config.yaml
 
 # Set the environment variable for JCasC to load the configuration
 ENV CASC_JENKINS_CONFIG=/usr/share/jenkins/ref/jenkins-config.yaml
