@@ -16,15 +16,19 @@
         name: "*"
         state: latest
 
-    - name: Generate JCasC file from template
-      template:
-        src: templates/jenkins-config.yaml.j2
-        dest: ../jenkins-config.yaml
+    - name: Get private IP of the host
+      ansible.builtin.setup:
+        gather_subset: network
+      register: host_info
 
-    #    - name: Install Git
-    #      yum:
-    #        name: git
-    #        state: present
+    - name: Print the registered host_info variable
+      debug:
+        var: host_info
+
+    - name: Install Git
+      yum:
+        name: git
+        state: present
 
     - name: Install Docker
       become: true
@@ -39,73 +43,65 @@
         groups: docker
         append: true
 
-    - name: Start and enable Docker service
+    - name: Install Docker Compose
       become: true
-      service:
-        name: docker
-        state: started
-        enabled: true
+      shell: >
+        curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)"
+        -o /usr/local/bin/docker-compose
 
-#    - name: Install Docker Compose
-#      become: true
-#      shell: >
-#        curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)"
-#        -o /usr/local/bin/docker-compose
-#
-#    - name: Make Docker Compose executable
-#      become: true
-#      file:
-#        path: /usr/local/bin/docker-compose
-#        mode: '0755'
-#        owner: root
-#        group: root
-#
-#    - name: Clone the Git repository
-#      git:
-#        repo: "{{ git_repo_url }}"
-#        dest: "{{ project_directory }}"
-#        update: yes
-#        force: yes
-#
-#    - name: Build Jenkins Docker image
-##      debug:
-##        msg: >
-##          Task failed with the following error:
-##          {{ result | to_nice_json }}
-#      command: docker build -t custom-jenkins:latest .
-#      args:
-#        chdir: "{{ project_directory }}/infrastructure/jenkins"
+    - name: Make Docker Compose executable
+      become: true
+      file:
+        path: /usr/local/bin/docker-compose
+        mode: '0755'
+        owner: root
+        group: root
+
+    - name: Clone the Git repository
+      git:
+        repo: "{{ git_repo_url }}"
+        dest: "{{ project_directory }}"
+        update: yes
+        force: yes
+
+    - name: Generate JCasC file from template
+      template:
+        src: templates/jenkins-config.yaml.j2
+        dest: "{{ project_directory }}/infrastructure/jenkins/docker/jenkins-config.yaml"
 
 
-#    - name: Copy docker-compose.yml to the project directory
-#      copy:
-#        src: /path/to/your/local/docker-compose.yml
-#        dest: "{{ project_directory }}/docker-compose.yml"
-#        mode: '0644'
-
-#    - name: Run Docker Compose
-#      command: docker-compose up -d
-#      args:
-#        chdir: "{{ project_directory }}/infrastructure/jenkins"
-
-#    - name: Wait for Jenkins to fully start
-#      wait_for:
-#        port: 8080
-#        delay: 10
-#        timeout: 60
-
-#    - name: Retrieve Jenkins initial admin password
-#      command: docker exec jenkins-blueocean cat /var/jenkins_home/secrets/initialAdminPassword
-#      register: jenkins_password
-#
-#    - name: Print Jenkins initial admin password
+    - name: Build Jenkins Docker image
 #      debug:
-#        msg: "Jenkins initial admin password: {{ jenkins_password.stdout }}"
-#
-#    - name: Save Jenkins initial admin password to a local file
-#      delegate_to: localhost
-#      become: false
-#      copy:
-#        content: "{{ jenkins_password.stdout }}"
-#        dest: "./jenkins_initial_admin_password.txt"
-#        mode: '0600'
+#        msg: >
+#          Task failed with the following error:
+#          {{ result | to_nice_json }}
+      command: docker build -t custom-jenkins:latest .
+      args:
+        chdir: "{{ project_directory }}/infrastructure/jenkins/docker"
+
+    - name: Run Docker Compose
+      command: docker-compose up -d
+      args:
+        chdir: "{{ project_directory_directory }}/infrastructure/jenkins/docker"
+
+    - name: Wait for Jenkins to fully start
+      wait_for:
+        port: 8080
+        delay: 10
+        timeout: 60
+
+    - name: Retrieve Jenkins initial admin password
+      command: docker exec jenkins-blueocean cat /var/jenkins_home/secrets/initialAdminPassword
+      register: jenkins_password
+
+    - name: Print Jenkins initial admin password
+      debug:
+        msg: "Jenkins initial admin password: {{ jenkins_password.stdout }}"
+
+    - name: Save Jenkins initial admin password to a local file
+      delegate_to: localhost
+      become: false
+      copy:
+        content: "{{ jenkins_password.stdout }}"
+        dest: "./jenkins_initial_admin_password.txt"
+        mode: '0600'

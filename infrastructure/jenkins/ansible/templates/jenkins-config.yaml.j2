@@ -20,7 +20,7 @@ jenkins:
       dockerApi:
         connectTimeout: 60
         dockerHost:
-          uri: "tcp://host.docker.internal:2376"
+          uri: "tcp://{{ host_info.ansible_facts.ansible_default_ipv4.address }}"
         readTimeout: 60
       exposeDockerHost: true
       name: "ttyty"
